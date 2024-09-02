@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <time.h>
+#include <string.h>
 
 #define SIZE 9
 
@@ -12,7 +13,7 @@ void print_grid(int grid[SIZE][SIZE]);
 void read_grid(int grid[SIZE][SIZE]);
 bool is_valid_grid(int grid[SIZE][SIZE]);
 void generate_puzzle(int grid[SIZE][SIZE]);
-void read_puzzles_from_file(const char *filename);
+void read_puzzles_from_file(const char *filename, const char *output_filename);
 
 // Print the Sudoku grid
 void print_grid(int grid[SIZE][SIZE]) {
@@ -142,24 +143,45 @@ void generate_puzzle(int grid[SIZE][SIZE]) {
 }
 
 // Read multiple Sudoku puzzles from a file and solve them
-void read_puzzles_from_file(const char *filename) {
+void read_puzzles_from_file(const char *filename, const char *output_filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
-        printf("Error opening file.\n");
+        printf("Error opening file: %s\n", filename);
+        return;
+    }
+
+    FILE *output_file = fopen(output_filename, "w");
+    if (output_file == NULL) {
+        printf("Error creating output file: %s\n", output_filename);
+        fclose(file);
         return;
     }
 
     int grid[SIZE][SIZE];
+    int puzzle_count = 0;
     while (fread(grid, sizeof(int), SIZE * SIZE, file) == SIZE * SIZE) {
+        puzzle_count++;
+        fprintf(output_file, "Puzzle #%d:\n", puzzle_count);
         if (solve_sudoku(grid)) {
-            print_grid(grid);
+            for (int i = 0; i < SIZE; i++) {
+                for (int j = 0; j < SIZE; j++) {
+                    if (grid[i][j] == 0)
+                        fprintf(output_file, ". ");
+                    else
+                        fprintf(output_file, "%d ", grid[i][j]);
+                }
+                fprintf(output_file, "\n");
+            }
         } else {
-            printf("No solution exists\n");
+            fprintf(output_file, "No solution exists\n");
         }
-        printf("\n");
+        fprintf(output_file, "\n");
     }
 
+    printf("Processed %d puzzles. Results saved to %s.\n", puzzle_count, output_filename);
+
     fclose(file);
+    fclose(output_file);
 }
 
 // Main function
@@ -167,7 +189,8 @@ int main() {
     int grid[SIZE][SIZE];
 
     int choice;
-    printf("Select option:\n");
+    printf("Welcome to the Sudoku Solver!\n");
+    printf("Select an option:\n");
     printf("1. Enter your own Sudoku puzzle\n");
     printf("2. Generate a random Sudoku puzzle\n");
     printf("3. Read and solve puzzles from a file\n");
@@ -180,25 +203,33 @@ int main() {
         case 1:
             read_grid(grid);
             if (!is_valid_grid(grid)) {
-                printf("Invalid grid input.\n");
+                printf("Invalid grid input. Please enter numbers between 0 and 9 only.\n");
                 return 1;
             }
             break;
         case 2:
             generate_puzzle(grid);
             break;
-        case 3:
-            read_puzzles_from_file("puzzles.txt");
+        case 3: {
+            char filename[100];
+            char output_filename[100];
+            printf("Enter the name of the input file (e.g., puzzles.txt): ");
+            scanf("%s", filename);
+            printf("Enter the name of the output file (e.g., solutions.txt): ");
+            scanf("%s", output_filename);
+            read_puzzles_from_file(filename, output_filename);
             return 0; // Exit after processing file puzzles
+        }
         default:
-            printf("Invalid option.\n");
+            printf("Invalid option. Please choose a valid option (1-3).\n");
             return 1;
     }
 
     if (solve_sudoku(grid)) {
+        printf("Solved Sudoku puzzle:\n");
         print_grid(grid);
     } else {
-        printf("No solution exists\n");
+        printf("No solution exists for the provided puzzle.\n");
     }
 
     clock_t end_time = clock();
