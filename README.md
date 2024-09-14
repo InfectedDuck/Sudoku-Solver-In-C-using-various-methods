@@ -60,7 +60,6 @@ Upon running the program, you will be prompted to select one of the following op
 - **`read_puzzles_from_file(const char *filename, const char *output_filename)`**:  
   Reads puzzles from a file and writes the solutions to another file.
 
-### License
+## License
 
-This project is licensed under the **Apache-2.0 license** – see the LICENSE file for details.
-
+This project is licensed under the [MIT License](https://opensource.org/licenses/MIT). See the [LICENSE](LICENSE.txt) file for details.
