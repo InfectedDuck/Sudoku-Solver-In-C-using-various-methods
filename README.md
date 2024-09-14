@@ -62,5 +62,5 @@ Upon running the program, you will be prompted to select one of the following op
 
 ### License
 
-This project is licensed under the **Apache License** – see the LICENSE file for details.
+This project is licensed under the **Apache-2.0 license** – see the LICENSE file for details.
 
