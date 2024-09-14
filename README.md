@@ -64,7 +64,3 @@ Upon running the program, you will be prompted to select one of the following op
 
 This project is licensed under the **MIT License** – see the LICENSE file for details.
 
-### Acknowledgements
-
-This project uses a standard backtracking algorithm for solving Sudoku puzzles.  
-Feel free to explore and improve upon this Sudoku solver. **Happy coding!**
